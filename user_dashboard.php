@@ -88,5 +88,66 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+    <script>
+    function toggleSidebar() {
+        var mySidebar = new bootstrap.Offcanvas(document.getElementById('mySidebar'));
+        mySidebar.toggle();
+    }
+
+    function applySearchFilterSort() {
+        let search = document.getElementById('searchEvent').value.toLowerCase();
+        let status = document.getElementById('statusFilter').value;
+        let sort = document.getElementById('sortOptions').value;
+
+        let events = document.querySelectorAll('.event-card');
+
+        events.forEach(event => {
+            let eventName = event.getAttribute('data-name');
+            let eventStatus = event.getAttribute('data-status');
+            let matchesSearch = eventName.includes(search);
+            let matchesStatus = (status === 'all') || (status === eventStatus);
+
+            if (matchesSearch && matchesStatus) {
+                event.style.display = 'block';
+            } else {
+                event.style.display = 'none';
+            }
+        });
+
+        let sortedEvents = Array.from(events).sort((a, b) => {
+            if (sort.includes('name')) {
+                let nameA = a.getAttribute('data-name');
+                let nameB = b.getAttribute('data-name');
+                return sort === 'name_asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
+            } else {
+                let dateA = new Date(a.getAttribute('data-date'));
+                let dateB = new Date(b.getAttribute('data-date'));
+                return sort === 'date_asc' ? dateA - dateB : dateB - dateA;
+            }
+        });
+
+        document.getElementById('eventGrid').innerHTML = '';
+        sortedEvents.forEach(event => {
+            document.getElementById('eventGrid').appendChild(event);
+        });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You will be logged out!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',  
+            cancelButtonColor: '#6c757d',  
+            confirmButtonText: 'Yes, logout!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = 'logout.php';
+            }
+        });
+    });
+    </script>
 </body>
 </html>
