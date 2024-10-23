@@ -6,3 +6,8 @@ if ($_SESSION['role'] !== 'admin') {
     header('Location: login.php');
     exit;
 }
+
+$admin_id = $_SESSION['user_id'];
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :admin_id");
+$stmt->execute(['admin_id' => $admin_id]);
+$admin = $stmt->fetch();
