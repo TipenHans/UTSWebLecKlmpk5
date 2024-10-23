@@ -77,5 +77,43 @@ $event_history = $stmt->fetchAll();
         <?php } ?>
         <a href="user_dashboard.php" class="btn btn-primary mt-5">Back to dashboard</a>
     </div>
+        <script>
+        function applySortFilter() {
+            const sortOption = document.getElementById('sortOptions').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const eventGrid = document.getElementById('eventGrid');
+            const events = Array.from(eventGrid.getElementsByClassName('event-card'));
+            events.forEach(event => {
+                const status = event.getAttribute('data-status');
+                const name = event.getAttribute('data-name');
+                if ((statusFilter === 'all' || status === statusFilter) && name.includes(searchInput)) {
+            event.style.display = 'block';
+                } else {
+            event.style.display = 'none';
+                }
+            });
+
+            events.sort((a, b) => {
+                const nameA = a.querySelector('h4').innerText.toLowerCase();
+                const nameB = b.querySelector('h4').innerText.toLowerCase();
+                const dateA = new Date(a.getAttribute('data-start-date'));
+                const dateB = new Date(b.getAttribute('data-start-date'));
+                switch (sortOption) {
+            case 'name_asc':
+                return nameA.localeCompare(nameB);
+            case 'name_desc':
+                return nameB.localeCompare(nameA);
+            case 'date_asc':
+                return dateA - dateB;
+            case 'date_desc':
+                return dateB - dateA;
+            default:
+                return 0;
+                }
+            });
+            events.forEach(event => eventGrid.appendChild(event));
+        }
+    </script>
 </body>
 </html>
