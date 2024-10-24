@@ -82,6 +82,8 @@ body {
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    flex: 1 1 calc(25% - 1.5rem);
+    transition: transform 0.3s;
 }
 
 #event-img {
@@ -94,6 +96,16 @@ body {
 .event-card h3 {
     font-size: 16px;
     margin: 10px 0;
+}
+
+.event-card:hover {
+    transform: scale(1.05);
+}
+
+.event-card img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
 }
 
 .btn-view {
@@ -160,6 +172,13 @@ body {
     .event-container {
         grid-template-columns: 1fr;
     }
+}
+
+.event-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: space-evenly;
 }
 
 .event-grid {
