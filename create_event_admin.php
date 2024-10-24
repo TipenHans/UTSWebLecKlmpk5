@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="mb-3">
                 <label for="banner" class="form-label">Upload Event Banner</label>
-                <input type="file" id="banner" name="banner" class="form-control" accept="image/*" onchange="loadFile(event) required">
+                <input type="file" id="banner" name="banner" class="form-control" accept="image/*" onchange="loadFile(event)" required>
                 <img id="bannerPreview" class="img-fluid mt-3" src="#" alt="Event Banner Preview" style="display:none;">
             </div>
             <div class="d-flex justify-content-between">
