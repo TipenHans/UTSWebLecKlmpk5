@@ -142,7 +142,7 @@ if (isset($_POST['cancel_registration'])) {
                         <div class="action-buttons text-center">
                             <?php if ($already_registered) { ?>
                                 <p class="text-warning">You are already registered for this event.</p>
-                            <?php } elseif ($event['status'] === 'open' && $event['current_participants'] < $event['max_participants'] && !$event_started) { ?>
+                            <?php } elseif ($event['status'] === 'open' && $event['current_participants'] < $event['max_participants']) { ?>
                                 <form method="POST" action="">
                                     <button type="submit" name="register" class="btn btn-primary" id="registerButton">Register</button>
                                 </form>
