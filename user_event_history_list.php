@@ -38,35 +38,38 @@ $event_history = $stmt->fetchAll();
             <h2>Your Event History</h2>
             <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="rounded-circle" width="50" height="50">
         </div>
-        <div class="search-section">
-            <label for="searchInput">Search by Name:</label>
-            <input type="text" id="searchInput" onkeyup="applySortFilter()" placeholder="Search events...">
+        <div class="row mb-5">
+            <div class="col">
+                <label for="searchInput">Search by Name:</label>
+                <input type="text" id="searchInput" onkeyup="applySortFilter()" placeholder="Search events..." class="form-control">
+            </div>
+            <div class="col">
+                <label for="sortOptions">Sort by:</label>
+                <select id="sortOptions" onchange="applySortFilter()" class="form-control">
+                    <option value="name_asc">Name A-Z</option>
+                    <option value="name_desc">Name Z-A</option>
+                    <option value="date_asc">Starting Soonest</option>
+                    <option value="date_desc">Starting Latest</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="statusFilter">Filter by:</label>
+                <select id="statusFilter" onchange="applySortFilter()" class="form-control">
+                    <option value="all">All Events</option>
+                    <option value="open">Open</option>
+                    <option value="closed">Closed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </div>
         </div>
-        <div class="sort-section">
-            <label for="sortOptions">Sort by:</label>
-            <select id="sortOptions" onchange="applySortFilter()">
-                <option value="name_asc">Name A-Z</option>
-                <option value="name_desc">Name Z-A</option>
-                <option value="date_asc">Starting Soonest</option>
-                <option value="date_desc">Starting Latest</option>
-            </select>
-                </div>
-                <div class="filter-section">
-            <label for="statusFilter">Filter by:</label>
-            <select id="statusFilter" onchange="applySortFilter()">
-                <option value="all">All Events</option>
-                <option value="open">Open</option>
-                <option value="closed">Closed</option>
-                <option value="cancelled">Cancelled</option>
-            </select>
-        </div>
+
         <?php if (empty($event_history)) { ?>
             <p>You have not registered for any events yet.</p>
         <?php } else { ?>
         <div class="event-grid" id="eventGrid">
             <?php foreach ($event_history as $event) { ?>
             <div class="event-card" data-name="<?php echo strtolower($event['event_name']); ?>" data-start-date="<?php echo $event['start_date']; ?>" data-status="<?php echo $event['status']; ?>">
-                <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner">
+                <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner" id="event-img"> 
                 <h4><?php echo $event['event_name']; ?></h4>
                 <p><strong>Start Date:</strong> <?php echo $event['start_date']; ?></p>
                 <p><strong>Status:</strong> <?php echo ucfirst($event['status']); ?></p>
