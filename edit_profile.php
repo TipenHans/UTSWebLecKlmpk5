@@ -2,23 +2,23 @@
 session_start();
 require 'db.php';
 
-// Ensure the user or admin is logged in
+
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Get the user ID
+
 $user_id = $_SESSION['user_id'];
 
-// Fetch the user's profile details
+
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :user_id");
 $stmt->execute(['user_id' => $user_id]);
 $user = $stmt->fetch();
 $error = '';
 $success = '';
 
-// Handle profile update
+
 if (isset($_POST['update_profile'])) {
     $full_name = $_POST['full_name'];
     $email = $_POST['email'];
@@ -26,14 +26,13 @@ if (isset($_POST['update_profile'])) {
     $old_password = $_POST['old_password'];
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
-    $profile_picture = $user['profile_picture']; // Default to current profile picture
-
-    // Check if the new email is unique (excluding the current user)
+    $profile_picture = $user['profile_picture']; 
+    
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email AND id != :user_id");
     $stmt->execute(['email' => $email, 'user_id' => $user_id]);
     $existing_user = $stmt->fetch();
 
-    // Check for errors
+   
     if ($existing_user) {
         $error = "Email is already taken. Please choose another.";
     } elseif (!empty($new_password) && $new_password !== $confirm_password) {
@@ -41,25 +40,21 @@ if (isset($_POST['update_profile'])) {
     } elseif (!empty($new_password) && empty($old_password)) {
         $error = "Please provide your old password to change the password.";
     } elseif (!empty($new_password)) {
-        // Check if the old password is correct
         if (!password_verify($old_password, $user['password'])) {
             $error = "Old password is incorrect.";
         } else {
-            $password_hash = password_hash($new_password, PASSWORD_DEFAULT); // Hash the new password
+            $password_hash = password_hash($new_password, PASSWORD_DEFAULT); 
         }
     }
 
-    // If no errors, proceed with updating the profile
+    
     if (empty($error)) {
-        // Handle profile picture upload
         if (!empty($_FILES['profile_picture']['name'])) {
             $target_dir = "uploads/";
             $target_file = $target_dir . basename($_FILES['profile_picture']['name']);
             $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-            // Check if file is a valid image
             $check = getimagesize($_FILES['profile_picture']['tmp_name']);
             if ($check !== false) {
-                // Check file size (limit to 5MB)
                 if ($_FILES['profile_picture']['size'] > 10000000) {
                     $error = "File is too large. Maximum size is 10MB.";
                 } elseif (!in_array($imageFileType, ['jpg', 'jpeg', 'png'])) {
@@ -75,10 +70,8 @@ if (isset($_POST['update_profile'])) {
                 $error = "File is not a valid image.";
             }
         }
-        // If no errors, update the profile
         if (empty($error)) {
             if (!empty($new_password)) {
-                // Update all details including password
                 $stmt = $pdo->prepare("UPDATE users SET full_name = :full_name, email = :email, phone_number = :phone_number, profile_picture = :profile_picture, password = :password WHERE id = :user_id");
                 $stmt->execute([
                     'full_name' => $full_name,
@@ -89,7 +82,6 @@ if (isset($_POST['update_profile'])) {
                     'user_id' => $user_id
                 ]);
             } else {
-                // Update other details except password
                 $stmt = $pdo->prepare("UPDATE users SET full_name = :full_name, email = :email, phone_number = :phone_number, profile_picture = :profile_picture WHERE id = :user_id");
                 $stmt->execute([
                     'full_name' => $full_name,
@@ -99,7 +91,7 @@ if (isset($_POST['update_profile'])) {
                     'user_id' => $user_id
                 ]);
             }
-            $success = true; // Set success flag
+            $success = true; 
         }
     }
 }
@@ -131,8 +123,6 @@ if (isset($_POST['update_profile'])) {
     <input type="file" name="profile_picture" id="profile-picture-input" accept="image/*">
     <label for="profile-picture-input" class="custom-file-upload">Choose File</label>
 </div>
-        
-        <!-- Center the buttons -->
         <div class="btn-container">
             <button type="submit" name="update_profile">Update Profile</button>
             <button type="button" class="cancel-btn" onclick="window.location.href='view_profile.php';">Cancel</button>
@@ -151,7 +141,6 @@ if (isset($_POST['update_profile'])) {
         reader.readAsDataURL(file);
     }
 });
-// Check for success or error and display SweetAlert accordingly
 <?php if (!empty($success)): ?>
     Swal.fire({
         icon: 'success',
