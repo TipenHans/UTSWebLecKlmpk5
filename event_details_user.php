@@ -24,10 +24,17 @@ if (!$event) {
 }
 
 $event_datetime = $event['start_date'] . ' ' . $event['start_time'];
-
 $current_time = new DateTime();
 $event_time = new DateTime($event_datetime);
-$event_started = $current_time >= $event_time;
+
+if ($current_time >= $event_time && $event['status'] !== 'closed') {
+    $stmt = $pdo->prepare("UPDATE events SET status = 'closed' WHERE event_id = :event_id");
+    $stmt->execute(['event_id' => $event_id]);
+
+    $stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = :event_id");
+    $stmt->execute(['event_id' => $event_id]);
+    $event = $stmt->fetch();
+}
 
 $stmt = $pdo->prepare("SELECT * FROM participants WHERE user_id = :user_id AND event_id = :event_id");
 $stmt->execute(['user_id' => $user_id, 'event_id' => $event_id]);
@@ -139,8 +146,8 @@ if (isset($_POST['cancel_registration'])) {
                                 <form method="POST" action="">
                                     <button type="submit" name="register" class="btn btn-primary" id="registerButton">Register</button>
                                 </form>
-                            <?php } elseif ($event_started) { ?>
-                                <p class="text-danger">The event has already started. Registration is closed.</p>
+                            <?php } elseif ($event['status'] === 'closed') { ?>
+                                <p class="text-danger">The event is closed. Registration is not available.</p>
                             <?php } else { ?>
                                 <p class="text-danger">Registration is closed or the event is full.</p>
                             <?php } ?>
@@ -179,12 +186,10 @@ if (isset($_POST['cancel_registration'])) {
                             var form = document.createElement('form');
                             form.method = 'POST';
                             form.action = '';
-
                             var input = document.createElement('input');
                             input.type = 'hidden';
                             input.name = 'cancel_registration';
                             form.appendChild(input);
-
                             document.body.appendChild(form);
                             form.submit();
                         }
@@ -193,7 +198,6 @@ if (isset($_POST['cancel_registration'])) {
             </script>
             <?php } ?>
         </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybZP5E9oC6z5VllcG0bQ4i9u9G+jSQlwH2d35Vp6kZmydPsd1" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-8x2t4UQSk8EALyxg6kPz0uTkDPKmnxnxLMjMC5vEExlgAUPQ6KDZfD7guRuj75k" crossorigin="anonymous"></script>
+    </div>
 </body>
 </html>
