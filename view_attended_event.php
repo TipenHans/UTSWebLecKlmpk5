@@ -14,11 +14,12 @@ $stmt->execute(['user_id' => $user_id]);
 $user = $stmt->fetch();
 
 $stmt = $pdo->prepare("
-    SELECT events.event_id, events.event_name, events.banner, events.start_date, events.status
+    SELECT events.event_id, events.event_name, events.banner, events.start_date, events.start_time, events.status, events.location
     FROM participants
     JOIN events ON participants.event_id = events.event_id
     WHERE participants.user_id = :user_id
 ");
+
 $stmt->execute(['user_id' => $user_id]);
 $event_history = $stmt->fetchAll();
 ?>
@@ -50,7 +51,7 @@ $event_history = $stmt->fetchAll();
                 <h2 class="text-center m-3">Events Attended by User</h2>
             </div>
             <div class="card-body">
-                <?php if (empty($events)) { ?>
+                <?php if (empty($event_history)) { ?>
                     <p class="text-center">This user hasn't registered for any events.</p>
                 <?php } else { ?>
                     <table id="eventsTable" class="table table-striped">
@@ -64,7 +65,7 @@ $event_history = $stmt->fetchAll();
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($events as $event) { ?>
+                            <?php foreach ($event_history as $event) { ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($event['event_id']); ?></td>
                                     <td><?php echo htmlspecialchars($event['event_name']); ?></td>
