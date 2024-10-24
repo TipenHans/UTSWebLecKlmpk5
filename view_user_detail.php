@@ -85,11 +85,30 @@ if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
                     </div>
                     <div>
                         <a href="view_user.php" class="btn btn-secondary mt-3" class="d-flex justify-content-start">Back to Users</a>
-                        <a href="delete_user.php?user_id=<?php echo $user_id; ?>" class="btn btn-danger mt-3" class="d-flex justify-content-end">Delete User</a>
+                        <a href="javascript:void(0);" class="btn btn-danger mt-3" id="deleteButton">Delete User</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    document.getElementById('deleteButton').addEventListener('click', function () {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "delete_user.php?user_id=<?php echo $user_id; ?>";
+            }
+        })
+    });
+</script>
+
     </body>
 </html>
