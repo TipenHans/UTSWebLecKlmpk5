@@ -17,7 +17,7 @@ $stmt = $pdo->prepare("
     SELECT events.event_id, events.event_name, events.banner, events.start_date, events.status, events.current_participants, events.max_participants
     FROM participants
     JOIN events ON participants.event_id = events.event_id
-    WHERE participants.user_id = :user_id
+    WHERE participants.user_id = :user_id AND events.start_date >= NOW()
 ");
 $stmt->execute(['user_id' => $user_id]);
 $registered_events = $stmt->fetchAll();
@@ -36,7 +36,7 @@ $registered_events = $stmt->fetchAll();
     <div class="container">
         <div class="header d-flex justify-content-between align-items-center mb-4">
             <h2>My Ongoing Events</h2>
-            <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile"  class="rounded-circle" width="50" height="50">
+            <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="rounded-circle" width="50" height="50">
         </div>
         <div class="sort-section">
             <div class="filter-section">
@@ -58,13 +58,13 @@ $registered_events = $stmt->fetchAll();
             </div>
         </div>
         <?php if (empty($registered_events)) { ?>
-            <p>You have not registered for any events yet.</p>
+            <p>You have not registered for any upcoming events yet.</p>
         <?php } else { ?>
             <div id="noEventsMessage" class="no-events-message">No event matches your filter.</div>
             <div class="event-grid" id="eventGrid">
                 <?php foreach ($registered_events as $event) { ?>
                     <div class="event-card" data-participants="<?php echo $event['current_participants']; ?>" data-status="<?php echo ($event['current_participants'] < $event['max_participants']) ? 'available' : 'full'; ?>">
-                        <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner">
+                        <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner" id="event-img">
                         <h4><?php echo $event['event_name']; ?></h4>
                         <p><strong>Start Date:</strong> <?php echo $event['start_date']; ?></p>
                         <p><strong>Status:</strong> <?php echo ucfirst($event['status']); ?></p>
@@ -101,8 +101,8 @@ $registered_events = $stmt->fetchAll();
                 events.sort((a, b) => {
                     const nameA = a.querySelector('h4').innerText.toLowerCase();
                     const nameB = b.querySelector('h4').innerText.toLowerCase();
-                    const dateA = new Date(a.querySelector('p').innerText);
-                    const dateB = new Date(b.querySelector('p').innerText);
+                    const dateA = new Date(a.querySelector('p').innerText.split(": ")[1]);
+                    const dateB = new Date(b.querySelector('p').innerText.split(": ")[1]);
 
                     switch (sortOption) {
                         case 'name_asc':
