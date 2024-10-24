@@ -48,15 +48,15 @@
                 </div>
             </div>
         </div>
-        <div class="content-container container mt-2" id="main">
+        <div class="content-container container" id="main">
             <div class="header d-flex justify-content-between align-items-center mb-4">
                 <img src="asset/menu.png" alt="Menu" class="img-fluid" id="menuButton" onclick="toggleSidebar()">
                 <h2>Available Events</h2>
-                <a href="view_profile.php"><img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="profile-icon img-thumbnail"></a>
+                <a href="view_profile.php"><img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="profile-icon img-thumbnail rounded-circle" width="60" height="60"></a>
             </div>
             <div class="filter-section">
                 <input type="text" id="searchEvent" class="form-control" placeholder="Search event by name..." onkeyup="applySearchFilterSort()">
-                <select id="statusFilter" class="form-control" onchange="applySearchFilterSort()">
+                <select id="statusFilter" class="form-control" onchange=" ()">
                     <option value="all">All Events</option>
                     <option value="available">Available Events</option>
                     <option value="full">Full Events</option>
