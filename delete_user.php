@@ -2,7 +2,6 @@
 require 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-    // Ensure user_id is set and valid
     if (!isset($_GET['user_id']) || empty($_GET['user_id'])) {
         header("Location: view_user.php");
         exit;
