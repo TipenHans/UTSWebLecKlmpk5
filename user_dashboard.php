@@ -17,6 +17,7 @@
     $events = $stmt->fetchAll();
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +25,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.9/dist/sweetalert2.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -56,7 +57,7 @@
             </div>
             <div class="filter-section">
                 <input type="text" id="searchEvent" class="form-control" placeholder="Search event by name..." onkeyup="applySearchFilterSort()">
-                <select id="statusFilter" class="form-control" onchange=" ()">
+                <select id="statusFilter" class="form-control" onchange="applySearchFilterSort()">
                     <option value="all">All Events</option>
                     <option value="available">Available Events</option>
                     <option value="full">Full Events</option>
@@ -69,16 +70,22 @@
                     <option value="date_desc">Starting Latest</option>
                 </select>
             </div>
-            <div class="event-grid mb-5">
+            <div class="event-grid mb-5" id="eventGrid">
                 <?php if (empty($events)) { ?>
                     <p>No events available.</p>
                 <?php } else { ?>
-                    <?php foreach ($events as $event) { ?>
-                        <div class="event-card" data-name="<?php echo strtolower($event['event_name']); ?>" data-status="<?php echo $event['status']; ?>" data-date="<?php echo $event['start_date']; ?>">
+                    <?php foreach ($events as $event) { 
+                        $isFull = $event['current_participants'] >= $event['max_participants'];
+                    ?>
+                        <div class="event-card" data-name="<?php echo strtolower($event['event_name']); ?>" data-status="<?php echo $isFull ? 'full' : 'available'; ?>" data-date="<?php echo $event['start_date']; ?>">
                             <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Image" id="event-img">
                             <h4><?php echo $event['event_name']; ?></h4>
                             <p><?php echo $event['start_date']; ?></p>
-                            <a href="event_details_user.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-info">Details</a>
+                            <?php if ($isFull) { ?>
+                                <p class="text-danger">Event Full</p>
+                            <?php } else { ?>
+                                <a href="event_details_user.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-info">Details</a>
+                            <?php } ?>
                         </div>
                     <?php } ?>
                 <?php } ?>
@@ -133,14 +140,19 @@
         });
     }
 
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('sortOptions').value = 'name_asc';
+        applySearchFilterSort();
+    });
+
     document.getElementById('logoutBtn').addEventListener('click', function() {
         Swal.fire({
             title: 'Are you sure?',
             text: "You will be logged out!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#dc3545',  
-            cancelButtonColor: '#6c757d',  
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
             confirmButtonText: 'Yes, logout!'
         }).then((result) => {
             if (result.isConfirmed) {
