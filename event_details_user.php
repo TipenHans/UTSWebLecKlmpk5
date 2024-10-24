@@ -2,41 +2,32 @@
 session_start();
 require 'db.php';
 
-// Ensure the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
 }
 
-// Get the event ID and user ID
 $event_id = $_GET['event_id'];
 $user_id = $_SESSION['user_id'];
 
-// Fetch event details
 $stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = :event_id");
 $stmt->execute(['event_id' => $event_id]);
 $event = $stmt->fetch();
 
-// If the event is not found, show an error
 if (!$event) {
     echo "Event not found.";
     exit;
 }
 
-// Combine event start date and time for JavaScript use
 $event_datetime = $event['start_date'] . ' ' . $event['start_time'];
 
-// Check if the user is already registered for this event
 $stmt = $pdo->prepare("SELECT * FROM participants WHERE user_id = :user_id AND event_id = :event_id");
 $stmt->execute(['user_id' => $user_id, 'event_id' => $event_id]);
 $already_registered = $stmt->fetch();
 
-// Handle event registration
 if (isset($_POST['register']) && !$already_registered && $event['status'] === 'open' && $event['current_participants'] < $event['max_participants']) {
-    // Generate a unique ticket code
     $ticket_code = 'TKT-' . strtoupper(substr(md5(time() . rand()), 0, 8));
 
-    // Register the user for the event with the generated ticket code
     $stmt = $pdo->prepare("INSERT INTO participants (user_id, event_id, ticket_code, register_date) VALUES (:user_id, :event_id, :ticket_code, NOW())");
     $stmt->execute([
         'user_id' => $user_id,
@@ -44,31 +35,24 @@ if (isset($_POST['register']) && !$already_registered && $event['status'] === 'o
         'ticket_code' => $ticket_code
     ]);
 
-    // Update the participant count for the event
     $stmt = $pdo->prepare("UPDATE events SET current_participants = current_participants + 1 WHERE event_id = :event_id");
     $stmt->execute(['event_id' => $event_id]);
 
-    // Set success message
     $_SESSION['success_message'] = "Registered successfully!";
     
-    // Redirect back to the event details page to trigger the notification
     header('Location: event_details_user.php?event_id=' . $event_id);
     exit;
 }
 
 if (isset($_POST['cancel_registration'])) {
-    // Remove the user from the participants table
     $stmt = $pdo->prepare("DELETE FROM participants WHERE user_id = :user_id AND event_id = :event_id");
     $stmt->execute(['user_id' => $user_id, 'event_id' => $event_id]);
 
-    // Update the participant count in the events table
     $stmt = $pdo->prepare("UPDATE events SET current_participants = current_participants - 1 WHERE event_id = :event_id");
     $stmt->execute(['event_id' => $event_id]);
 
-    // Set success message for cancellation
     $_SESSION['success_message'] = "Canceled registration successfully!";
     
-    // Redirect back to the event details page to trigger the notification
     header('Location: event_details_user.php?event_id=' . $event_id);
     exit;
 }
@@ -88,7 +72,6 @@ if (isset($_POST['cancel_registration'])) {
 <div class="container">
     <h2>Event Details</h2>
 
-    <!-- Display success message using SweetAlert2 -->
     <?php if (isset($_SESSION['success_message'])): ?>
     <script>
         Swal.fire({
@@ -141,7 +124,6 @@ if (isset($_POST['cancel_registration'])) {
 </div>
 
 <script>
-// Countdown script
 var countDownDate = new Date("<?php echo $event_datetime; ?>").getTime();
 
 var countdownfunction = setInterval(function() {
@@ -161,7 +143,6 @@ var countdownfunction = setInterval(function() {
     }
 }, 1000);
 
-// Cancel registration confirmation
 document.getElementById('cancelButton')?.addEventListener('click', function() {
     Swal.fire({
         title: 'Are you sure?',
