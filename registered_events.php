@@ -38,8 +38,8 @@ $registered_events = $stmt->fetchAll();
             <h2>My Ongoing Events</h2>
             <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="rounded-circle" width="50" height="50">
         </div>
-        <div class="sort-section">
-            <div class="filter-section">
+        <div class="sort-section row mb-5">
+            <div class="col">
                 <label for="statusFilter">Filter by:</label>
                 <select id="statusFilter" class="form-control" onchange="applyFilterSort()">
                     <option value="all">All Events</option>
@@ -47,7 +47,7 @@ $registered_events = $stmt->fetchAll();
                     <option value="full">Full Events</option>
                 </select>
             </div>
-            <div class="sort-section">
+            <div class="col">
                 <label for="sortOptions">Sort by:</label>
                 <select id="sortOptions" class="form-control" onchange="applyFilterSort()">
                     <option value="name_asc">Name A-Z</option>
@@ -60,7 +60,6 @@ $registered_events = $stmt->fetchAll();
         <?php if (empty($registered_events)) { ?>
             <p>You have not registered for any upcoming events yet.</p>
         <?php } else { ?>
-            <div id="noEventsMessage" class="no-events-message">No event matches your filter.</div>
             <div class="event-grid" id="eventGrid">
                 <?php foreach ($registered_events as $event) { ?>
                     <div class="event-card" data-participants="<?php echo $event['current_participants']; ?>" data-status="<?php echo ($event['current_participants'] < $event['max_participants']) ? 'available' : 'full'; ?>">
