@@ -75,7 +75,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `full_name`, `email`, `password`, `phone_number`, `role`, `profile_picture`, `created_at`, `status`) VALUES
 ('admin118443', 'admin', 'admin@admin.umn.ac.id', '$2y$10$7ZSCTH4eL7KsYONLPKkXnuRis4Qi2OTC2VuhXqvcmC19sv9L/RWve', '1', 'admin', 'account.png', '2024-10-19 10:32:10', 'active');
-
+-- password is 123
 --
 -- Indexes for dumped tables
 --
