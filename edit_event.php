@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_event'])) {
 
     $_SESSION['event_updated'] = true;
 
-    header('Location: edit_event.php?event_id=' . $event_id);
+    header('Location: event_details_admin.php?event_id=' . $event_id);
     exit;
 }
 ?>
@@ -108,7 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_event'])) {
                     <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner" class="img-fluid rounded" width="400">
                 </div>
             
-                <form class="form-edit mt-4" action="edit_event.php?event_id=<?php echo $event_id; ?>" method="POST" enctype="multipart/form-data">
+                <form class="form-edit mt-4" action="" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="event_name" class="form-label">Nama Event:</label>
                         <input type="text" id="event_name" name="event_name" class="form-control" value="<?php echo $event['event_name']; ?>" required>
