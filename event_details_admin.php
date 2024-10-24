@@ -54,24 +54,29 @@ if (isset($_POST['delete_event'])) {
 
     <div class="container mt-5">
         <div class="d-flex justify-content-center">
-            <div class="card col-5 shadow-lg">
+            <div class="card col-lg-5 col-md-7 col-sm-10 shadow-lg">
                 <div class="card-header">
                     <h2>Event Details</h2>
                 </div>
                 <div class="card-body">
                     <div class="event-banner mb-3">
-                        <div class="d-flex justify-content-around">
-                            <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner" id="event-img">
-                            <div class="card">
-                                <div class="card-body">
-                                    <p class="card-title">Time Remaining Until Event Starts:</p>
-                                    <div id="countdown" class="card-text fw-bold fs-4"></div>
-                                    <div class="">
-                                        Event Starts On: <?php echo date("F j, Y, g:i a", strtotime($event['start_date'] . ' ' . $event['start_time'])); ?>
+                        <div class="row">
+                            <div class="col-12 col-md-6 mb-3">
+                                <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Banner" id="event-img" class="img-fluid">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <p class="card-title">Time Remaining Until Event Starts:</p>
+                                        <div id="countdown" class="card-text fw-bold fs-4"></div>
+                                        <div>
+                                            Event Starts On: <?php echo date("F j, Y, g:i a", strtotime($event['start_date'] . ' ' . $event['start_time'])); ?>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <table class="table table-bordered mt-3">
                             <tbody>
                                 <tr>
@@ -100,21 +105,24 @@ if (isset($_POST['delete_event'])) {
                                 </tr>
                             </tbody>
                         </table>
+
                         <div class="d-flex justify-content-end">
                             <a href="participants.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-primary">View Participants</a>
                         </div>
-                        <div class="mt-4 d-flex justify-content-between">
+                        
+                        <div class="mt-4 d-flex justify-content-between flex-wrap">
                             <div>
-                                <a href="edit_event.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-warning">Edit</a>
-                                <button type="button" class="btn btn-danger" onclick="confirmDelete(<?php echo $event['event_id']; ?>)">Delete</button>
+                                <a href="edit_event.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-warning mb-2">Edit</a>
+                                <button type="button" class="btn btn-danger mb-2" onclick="confirmDelete(<?php echo $event['event_id']; ?>)">Delete</button>
                             </div>
-                            <a href="admin_dashboard.php" class="btn btn-secondary">Back</a>
+                            <a href="admin_dashboard.php" class="btn btn-secondary mb-2">Back</a>
                         </div>
                     </div>
                 </div>
             </div>  
         </div>  
-    </div> 
+    </div>
+ 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -146,7 +154,7 @@ if (isset($_POST['delete_event'])) {
                                 text: data.message,
                                 confirmButtonText: 'OK'
                             }).then(() => {
-                                window.location.href = 'admin_dashboard.php'; // Redirect to admin dashboard
+                                window.location.href = 'admin_dashboard.php';
                             });
                         } else {
                             Swal.fire({
