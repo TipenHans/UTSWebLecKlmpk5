@@ -83,11 +83,11 @@
                             <p><?php echo $event['start_date']; ?></p>
                             <?php if ($isFull) { ?>
                                 <p class="text-danger">Event Full</p>
-                            <?php } else { ?>
-                                <a href="event_details_user.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-info">Details</a>
                             <?php } ?>
+                            <a href="event_details_user.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-info">Details</a>
                         </div>
                     <?php } ?>
+
                 <?php } ?>
             </div>
         </div>
