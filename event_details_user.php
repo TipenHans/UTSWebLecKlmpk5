@@ -7,6 +7,8 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+date_default_timezone_set('Asia/Jakarta');
+
 $event_id = $_GET['event_id'];
 $user_id = $_SESSION['user_id'];
 
@@ -27,9 +29,16 @@ $event_datetime = $event['start_date'] . ' ' . $event['start_time'];
 $current_time = new DateTime();
 $event_time = new DateTime($event_datetime);
 
+echo "Current Time: " . $current_time->format('Y-m-d H:i:s') . "<br>";
+echo "Event Time: " . $event_time->format('Y-m-d H:i:s') . "<br>";
+
 if ($current_time >= $event_time && $event['status'] !== 'closed') {
     $stmt = $pdo->prepare("UPDATE events SET status = 'closed' WHERE event_id = :event_id");
-    $stmt->execute(['event_id' => $event_id]);
+    if ($stmt->execute(['event_id' => $event_id])) {
+        echo "Event status updated to closed.<br>";
+    } else {
+        echo "Failed to update event status.<br>";
+    }
 
     $stmt = $pdo->prepare("SELECT * FROM events WHERE event_id = :event_id");
     $stmt->execute(['event_id' => $event_id]);
@@ -59,7 +68,7 @@ if (isset($_POST['register']) && !$already_registered && $event['status'] === 'o
     exit;
 }
 
-if (isset($_POST['cancel_registration'])) {
+if (isset($_POST['cancel_registration']) && $event['status'] !== 'closed') {
     $stmt = $pdo->prepare("DELETE FROM participants WHERE user_id = :user_id AND event_id = :event_id");
     $stmt->execute(['user_id' => $user_id, 'event_id' => $event_id]);
 
@@ -72,6 +81,7 @@ if (isset($_POST['cancel_registration'])) {
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -105,6 +115,11 @@ if (isset($_POST['cancel_registration'])) {
                 registerButton.disabled = true;
                 registerButton.innerText = "Registration Closed";
             }
+            var cancelButton = document.getElementById("cancelButton");
+            if (cancelButton) {
+                cancelButton.disabled = true;
+                cancelButton.innerText = "Cancellation Closed";
+            }
         }
     }, 1000);
     </script>
@@ -113,7 +128,7 @@ if (isset($_POST['cancel_registration'])) {
     <div class="container">
         <div class="header d-flex justify-content-between align-items-center mb-2">
             <h2>Event Details</h2>
-            <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile"  class="rounded-circle" width="50" height="50">
+            <img src="uploads/<?php echo !empty($user['profile_picture']) ? $user['profile_picture'] : 'default_profile.png'; ?>" alt="Profile" class="rounded-circle" width="50" height="50">
         </div>
 
         <?php if (isset($_SESSION['success_message'])): ?>
@@ -167,36 +182,37 @@ if (isset($_POST['cancel_registration'])) {
         <div class="row mt-4">
             <div class="col-md-12 text-start">
                 <a href="user_dashboard.php" class="btn btn-secondary">Back to Dashboard</a>
-            <?php if ($already_registered) { ?>
-                <button type="button" class="btn btn-danger" id="cancelButton">Cancel Registration</button>
-            </div>
+                <?php if ($already_registered) { ?>
+                    <button type="button" class="btn btn-danger" id="cancelButton">Cancel Registration</button>
+                </div>
 
-            <script>
-                document.getElementById('cancelButton').addEventListener('click', function() {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "You won't be able to revert this!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, cancel it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            var form = document.createElement('form');
-                            form.method = 'POST';
-                            form.action = '';
-                            var input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'cancel_registration';
-                            form.appendChild(input);
-                            document.body.appendChild(form);
-                            form.submit();
-                        }
+                <script>
+                    document.getElementById('cancelButton').addEventListener('click', function() {
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Yes, cancel it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                var form = document.createElement('form');
+                                form.method = 'POST';
+                                form.action = '';
+                                var input = document.createElement('input');
+                                input.type = 'hidden';
+                                input.name = 'cancel_registration';
+                                form.appendChild(input);
+                                document.body.appendChild(form);
+                                form.submit();
+                            }
+                        });
                     });
-                });
-            </script>
-            <?php } ?>
+                </script>
+                <?php } ?>
+            </div>
         </div>
     </div>
 </body>
