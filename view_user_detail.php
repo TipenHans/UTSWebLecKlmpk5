@@ -8,7 +8,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 if (isset($_GET['user_id']) && !empty($_GET['user_id'])) {
-    $user_id = $_GET['user_id'];
+    $user_id = filter_input(INPUT_GET, 'user_id', FILTER_VALIDATE_INT);
 
     $admin_id = $_SESSION['user_id'];
     $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :admin_id");
