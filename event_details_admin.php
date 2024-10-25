@@ -7,6 +7,8 @@ if ($_SESSION['role'] !== 'admin') {
     exit;
 }
 
+date_default_timezone_set('Asia/Jakarta');
+
 $admin_id = $_SESSION['user_id'];
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :admin_id");
 $stmt->execute(['admin_id' => $admin_id]);
@@ -20,6 +22,14 @@ $event = $stmt->fetch();
 if (!$event) {
     echo "Event not found.";
     exit;
+}
+
+$currentDate = new DateTime();
+$eventStartDate = new DateTime($event['start_date'] . ' ' . $event['start_time']);
+
+if ($currentDate > $eventStartDate && $event['status'] !== 'closed') {
+    $stmt = $pdo->prepare("UPDATE events SET status = 'closed' WHERE event_id = :event_id");
+    $stmt->execute(['event_id' => $event_id]);
 }
 
 if (isset($_POST['delete_event'])) {
@@ -189,4 +199,3 @@ if (isset($_POST['delete_event'])) {
     </script>
 </body>
 </html>
-
