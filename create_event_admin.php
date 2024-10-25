@@ -13,13 +13,13 @@ $stmt->execute(['admin_id' => $admin_id]);
 $admin = $stmt->fetch();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $event_name = $_POST['event_name'];
-    $start_date = $_POST['start_date'];
-    $start_time = $_POST['start_time'];
-    $location = $_POST['location'];
-    $description = $_POST['description'];
-    $max_participants = $_POST['max_participants'];
-    $status = $_POST['status'];
+    $event_name = htmlspecialchars($_POST['event_name']);
+    $start_date = htmlspecialchars($_POST['start_date']);
+    $start_time = htmlspecialchars($_POST['start_time']);
+    $location = htmlspecialchars($_POST['location']);
+    $description = htmlspecialchars($_POST['description']);
+    $max_participants = (int)$_POST['max_participants'];
+    $status = htmlspecialchars($_POST['status']);
 
     if ($max_participants < 1) {
         $_SESSION['error'] = 'Invalid Max Participants';
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!empty($_FILES['banner']['name'])) {
-        $banner = $_FILES['banner']['name'];
+        $banner = htmlspecialchars($_FILES['banner']['name']);
         $banner_tmp = $_FILES['banner']['tmp_name'];
         $upload_dir = "uploads/";
 
@@ -84,12 +84,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         function loadFile(event) {
             const output = document.getElementById('bannerPreview');
-            output.src = URL.createObjectURL(event.target.files[0]);
-            output.onload = function() {
-                URL.revokeObjectURL(output.src);
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                output.src = URL.createObjectURL(file);
+                output.style.display = 'block';
+                output.onload = function() {
+                    URL.revokeObjectURL(output.src);
+                }
+            } else {
+                output.style.display = 'none';
+                alert('Please upload a valid image file.');
             }
         }
-    </script>
+</script>
+
 </head>
 <body>
     <div class="header">
