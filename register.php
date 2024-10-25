@@ -4,7 +4,7 @@ require 'db.php';
 
 $notification = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = filter_var(trim($_POST['full_name']), FILTER_SANITIZE_STRING);
+    $name = preg_replace('/[()\[\]{}?<>]/', '', trim($_POST['full_name']));
     $email = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
     
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
