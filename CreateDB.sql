@@ -68,7 +68,7 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `phone_number` varchar(15) NOT NULL,
   `role` enum('user','admin') NOT NULL,
-  `profile_picture` varchar(255) DEFAULT 'account.png',
+  `profile_picture` varchar(255) DEFAULT 'default_profile.png',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `status` enum('active','inactive') DEFAULT 'active'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
