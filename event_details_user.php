@@ -29,9 +29,6 @@ $event_datetime = $event['start_date'] . ' ' . $event['start_time'];
 $current_time = new DateTime();
 $event_time = new DateTime($event_datetime);
 
-echo "Current Time: " . $current_time->format('Y-m-d H:i:s') . "<br>";
-echo "Event Time: " . $event_time->format('Y-m-d H:i:s') . "<br>";
-
 if ($current_time >= $event_time && $event['status'] !== 'closed') {
     $stmt = $pdo->prepare("UPDATE events SET status = 'closed' WHERE event_id = :event_id");
     if ($stmt->execute(['event_id' => $event_id])) {
