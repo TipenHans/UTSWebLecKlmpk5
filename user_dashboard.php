@@ -1,22 +1,21 @@
 <?php
-    session_start();
-    require 'db.php';
+session_start();
+require 'db.php';
 
-    if (!isset($_SESSION['user_id'])) {
-        header('Location: login.php');
-        exit;
-    }
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
 
-    $user_id = $_SESSION['user_id'];
+$user_id = $_SESSION['user_id'];
 
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :user_id");
-    $stmt->execute(['user_id' => $user_id]);
-    $user = $stmt->fetch();
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = :user_id");
+$stmt->execute(['user_id' => $user_id]);
+$user = $stmt->fetch();
 
-    $stmt = $pdo->query("SELECT * FROM events WHERE status = 'open' ORDER BY start_date ASC");
-    $events = $stmt->fetchAll();
+$stmt = $pdo->query("SELECT * FROM events ORDER BY start_date ASC");
+$events = $stmt->fetchAll();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,6 +60,7 @@
                     <option value="all">All Events</option>
                     <option value="available">Available Events</option>
                     <option value="full">Full Events</option>
+                    <option value="closed">Closed Events</option>
                 </select>
                 <select id="sortOptions" class="form-control" onchange="applySearchFilterSort()">
                     <option value="#" selected disabled>Sort By:</option>
@@ -77,17 +77,18 @@
                     <?php foreach ($events as $event) { 
                         $isFull = $event['current_participants'] >= $event['max_participants'];
                     ?>
-                        <div class="event-card" data-name="<?php echo strtolower($event['event_name']); ?>" data-status="<?php echo $isFull ? 'full' : 'available'; ?>" data-date="<?php echo $event['start_date']; ?>">
+                        <div class="event-card" data-name="<?php echo strtolower($event['event_name']); ?>" data-status="<?php echo $isFull ? 'full' : ($event['status'] === 'closed' ? 'closed' : 'available'); ?>" data-date="<?php echo $event['start_date']; ?>">
                             <img src="uploads/<?php echo $event['banner']; ?>" alt="Event Image" id="event-img">
                             <h4><?php echo $event['event_name']; ?></h4>
                             <p><?php echo $event['start_date']; ?></p>
                             <?php if ($isFull) { ?>
                                 <p class="text-danger">Event Full</p>
+                            <?php } elseif ($event['status'] == 'closed') { ?>
+                                <p class="text-warning">Event Closed</p>
                             <?php } ?>
                             <a href="event_details_user.php?event_id=<?php echo $event['event_id']; ?>" class="btn btn-info">Details</a>
                         </div>
                     <?php } ?>
-
                 <?php } ?>
             </div>
         </div>
